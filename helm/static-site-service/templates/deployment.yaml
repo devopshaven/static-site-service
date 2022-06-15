@@ -33,18 +33,39 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MINIO_ENDPOINT
+              value: {{ .Values.minio.endpoint }}
+            - name: MINIO_USE_SSL
+              {{ if .Values.minio.useSSL }}
+              value: "true"
+              {{ else }}
+              value: "false"
+              {{ end }}
+            - name: MINIO_ACCESS_KEY_ID
+              value: {{ .Values.minio.accessKey }}
+            - name: MINIO_ACCESS_KEY_SECRET
+              value: {{ .Values.minio.accessSecret }}
+            - name: SITE_NAME
+              value: zamzi
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: management
+              containerPort: 5000
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /health
-              port: http
-          readinessProbe:
+              port: management
+          startupProbe:
             httpGet:
               path: /ready
-              port: http
+              port: management
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

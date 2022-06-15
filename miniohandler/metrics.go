@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
@@ -27,9 +28,22 @@ func NewMetricsHandler() {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
 
+	mux.HandleFunc("/ready", ReadyHandler)
+	mux.HandleFunc("/health", ReadyHandler)
+
 	go func() {
 		http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", metricsPort), mux)
 	}()
 
 	log.Info().Msgf("metrics server is listening on port: %s", metricsPort)
+}
+
+func ReadyHandler(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Server", "DOH-Static-Site-Service")
+
+	enc := jsoniter.NewEncoder(w)
+	enc.Encode(map[string]interface{}{
+		"success": true,
+	})
 }

@@ -5,14 +5,20 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: ghcr.io/devopshaven/static-site-service
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "latest"
+
+minio:
+  endpoint: s3.ace-platform.dev
+  useSSL: true
+  accessKey: ""
+  accessSecret: ""
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "doh-ss"
 
 serviceAccount:
   # Specifies whether a service account should be created
