@@ -37,6 +37,8 @@ func main() {
 		useSSL = true
 	}
 
+	log.Info().Msg("Initializing DOH static site service")
+
 	// Initialize MinIO client object.
 	mc, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
