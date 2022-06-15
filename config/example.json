@@ -1,0 +1,71 @@
+{
+    "hosting": {
+  
+      "public": "dist/app",  // "public" is the only required attribute for Hosting
+  
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+  
+      "redirects": [ {
+        "source": "/foo",
+        "destination": "/bar",
+        "type": 301
+      }, {
+        "source": "/firebase/**",
+        "destination": "https://www.firebase.com",
+        "type": 302
+      } ],
+  
+      "rewrites": [ {
+        // Shows the same content for multiple URLs
+        "source": "/app/**",
+        "destination": "/app/index.html"
+      }, {
+        // Configures a custom domain for Dynamic Links
+        "source": "/promos/**",
+        "dynamicLinks": true
+      }, {
+        // Directs a request to Cloud Functions
+        "source": "/bigben",
+        "function": "bigben"
+      }, {
+        // Directs a request to a Cloud Run containerized app
+        "source": "/helloworld",
+        "run": {
+          "serviceId": "helloworld",
+          "region": "us-central1"
+        }
+      } ],
+  
+      "headers": [ {
+        "source": "**/*.@(eot|otf|ttf|ttc|woff|font.css)",
+        "headers": [ {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        } ]
+      }, {
+        "source": "**/*.@(jpg|jpeg|gif|png)",
+        "headers": [ {
+          "key": "Cache-Control",
+          "value": "max-age=7200"
+        } ]
+      }, {
+        "source": "404.html",
+        "headers": [ {
+          "key": "Cache-Control",
+          "value": "max-age=300"
+        } ]
+      } ],
+  
+      "cleanUrls": true,
+  
+      "trailingSlash": false,
+  
+      // Required to configure custom domains for Dynamic Links
+      "appAssociation": "AUTO"
+  
+    }
+  }
