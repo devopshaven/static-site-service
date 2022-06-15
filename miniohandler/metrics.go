@@ -17,8 +17,8 @@ var httpMetrics = prometheus.NewHistogram(
 		Help:      "This is my histogram",
 	})
 
-// PrometheusHandler
-func PrometheusHandler() {
+// NewMetricsHandler
+func NewMetricsHandler() {
 	metricsPort := os.Getenv("METRICS_PORT")
 	if metricsPort == "" {
 		metricsPort = "5000"
@@ -27,7 +27,9 @@ func PrometheusHandler() {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
 
-	http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", metricsPort), mux)
+	go func() {
+		http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", metricsPort), mux)
+	}()
 
 	log.Info().Msgf("metrics server is listening on port: %s", metricsPort)
 }

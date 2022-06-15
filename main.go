@@ -49,7 +49,7 @@ func main() {
 		log.Info().Err(err).Msg("cannot connect to minio instance")
 	}
 
-	miniohandler.PrometheusHandler()
+	miniohandler.NewMetricsHandler()
 
 	log.Info().Msgf("http server is listening on address: http://%s", listenAddr)
 	if err := http.ListenAndServe(listenAddr, miniohandler.MinioHandler(mc, siteName, true)); err != nil {
