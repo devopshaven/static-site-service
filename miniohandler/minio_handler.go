@@ -52,6 +52,7 @@ type minioHandler struct {
 
 // ServeHTTP is the default http handler func to handle incoming resource requests.
 func (h *minioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
 	upath := r.URL.Path
 	if !strings.HasPrefix(upath, "/") {
 		upath = "/" + upath
@@ -79,6 +80,7 @@ func (h *minioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	st, err := obj.Stat()
 	if err != nil {
+		log.Trace().Msg("resource not found")
 		if h.singlePage && h.RetryIndex(ctx, w, r) {
 			return
 		}
@@ -98,7 +100,7 @@ func (h *minioHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *minioHandler) RetryIndex(ctx context.Context, w http.ResponseWriter, r *http.Request) (found bool) {
 	found = false
 
-	obj, err := h.mc.GetObject(ctx, bucket, h.site+indexFile, minio.GetObjectOptions{})
+	obj, err := h.mc.GetObject(ctx, bucket, h.site+"/"+indexFile, minio.GetObjectOptions{})
 
 	if err != nil {
 
