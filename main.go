@@ -28,6 +28,7 @@ func main() {
 	endpoint := os.Getenv("MINIO_ENDPOINT")
 	accessKeyID := os.Getenv("MINIO_ACCESS_KEY_ID")
 	secretAccessKey := os.Getenv("MINIO_ACCESS_KEY_SECRET")
+
 	useSSL := false
 
 	siteName := os.Getenv("SITE_NAME")
@@ -46,7 +47,10 @@ func main() {
 		log.Info().Err(err).Msg("cannot connect to minio instance")
 	}
 
+	miniohandler.PrometheusHandler()
+
+	log.Info().Msgf("http server is listening on address: http://%s", listenAddr)
 	if err := http.ListenAndServe(listenAddr, miniohandler.MinioHandler(mc, siteName, true)); err != nil {
-		panic(fmt.Errorf("http server exited: %w", err))
+		log.Warn().Err(fmt.Errorf("http server exited: %w", err)).Send()
 	}
 }
